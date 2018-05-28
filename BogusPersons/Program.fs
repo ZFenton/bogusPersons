@@ -14,7 +14,8 @@ let faker =
 
 [<EntryPoint>]
 let main argv = 
-
+   (*********************************************************************
+    //  DEPRECATED - BUT KEEPING HERE AS EXAMPLE OF SIMPLIFICATION
     let generatePerson() = faker.Generate(1)
     let whereNumberOfPersonsIs theGivenNumber = [1 .. theGivenNumber]
     let singlePerson =
@@ -24,15 +25,21 @@ let main argv =
 
     let mapSinglePerson = List.map singlePerson
     let personList = whereNumberOfPersonsIs 10  |> mapSinglePerson
+    **********************************************************************)
+    
+    let persons = 10
+    let robustPersonList = faker.Generate(persons) |> List.ofSeq
 
     printfn "*************** PRINTING ALL PERSONS' FIRST NAMES ***************"
     let printNamesWithIndex index person = printfn "Person %d) %s" (index + 1) person.FirstName
     let printNumberedNames = fun index person -> printNamesWithIndex index person
     let asNumberedList = List.iteri printNumberedNames      // TODO: convert to map then print in last step
     let printNamesFrom givenList = givenList |> asNumberedList
-    printNamesFrom personList
+    printNamesFrom robustPersonList
     printfn ""
 
     //let MODEL = personList |> List.iteri (fun i x -> printfn "Person %d) %s" (i + 1) x.FirstName) //FUNCTION TO USE AS MODEL FOR NEW FUNCTIONS
 
-    0
+
+    let retval = 0
+    retval
