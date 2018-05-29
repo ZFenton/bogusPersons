@@ -5,7 +5,6 @@ open Bogus
 [<CLIMutable>]
 type Person = {FirstName:string; LastName:string; Email:string}
 
-
 let faker =
     Faker<Person>()
         .RuleFor( (fun p -> p.FirstName), fun (f:Faker) -> f.Name.FirstName() )
@@ -14,6 +13,8 @@ let faker =
 
 [<EntryPoint>]
 let main argv = 
+
+    //let MODEL = personList |> List.iteri (fun i x -> printfn "Person %d) %s" (i + 1) x.FirstName) //FUNCTION TO USE AS MODEL FOR NEW FUNCTIONS
    (*********************************************************************
     //  DEPRECATED - BUT KEEPING HERE AS EXAMPLE OF SIMPLIFICATION
     let generatePerson() = faker.Generate(1)
@@ -32,14 +33,20 @@ let main argv =
 
     printfn "*************** PRINTING ALL PERSONS' FIRST NAMES ***************"
     let printNamesWithIndex index person = printfn "Person %d) %s" (index + 1) person.FirstName
-    let printNumberedNames = fun index person -> printNamesWithIndex index person
-    let asNumberedList = List.iteri printNumberedNames      // TODO: convert to map then print in last step
+    let printNumberedNames =
+        fun index person -> printNamesWithIndex index person
+    let asNumberedList = List.iteri printNumberedNames      // TODO: convert to map then print in last step !-- ALL PRINT FUNCTIONS SHOULD BE RE-USABLE --! 
     let printNamesFrom givenList = givenList |> asNumberedList
     printNamesFrom robustPersonList
-    printfn ""
+    printfn "*****************************************************************\n"
 
-    //let MODEL = personList |> List.iteri (fun i x -> printfn "Person %d) %s" (i + 1) x.FirstName) //FUNCTION TO USE AS MODEL FOR NEW FUNCTIONS
 
+    let filterOnGmail = 
+        fun (person:Person) -> person.Email.Contains("@gmail.com")
+    let personsWithGmailList = List.filter filterOnGmail robustPersonList
+
+    printfn "**************** PRINTING ALL PERSONS' With GMail ****************"
+    printfn "%A" personsWithGmailList
 
     let retval = 0
     retval
