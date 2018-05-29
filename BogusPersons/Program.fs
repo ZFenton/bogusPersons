@@ -40,10 +40,10 @@ let main argv =
     printNamesFrom robustPersonList
     printfn "*****************************************************************\n"
 
-
-    let filterOnGmail = 
-        fun (person:Person) -> person.Email.Contains("@gmail.com")
-    let personsWithGmailList = List.filter filterOnGmail robustPersonList
+    let gmailDomain = "@gmail.com"
+    let filterOnEmail domain = 
+        fun (person:Person) -> person.Email.Contains(domain)
+    let personsWithGmailList = List.filter (filterOnEmail gmailDomain) robustPersonList
 
     printfn "**************** PRINTING ALL PERSONS' With GMail ****************"
     printfn "%A" personsWithGmailList
