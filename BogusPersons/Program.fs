@@ -3,50 +3,49 @@ open System
 open Bogus
 
 [<CLIMutable>]
-type Person = {FirstName:string; LastName:string; Email:string}
+[<StructuredFormatDisplay("{firstName} {lastName}'s email is {email}")>]
+type Person = {firstName:string; lastName:string; email:string}
 
 let faker =
     Faker<Person>()
-        .RuleFor( (fun p -> p.FirstName), fun (f:Faker) -> f.Name.FirstName() )
-        .RuleFor( (fun p -> p.LastName), fun (f:Faker) -> f.Name.LastName() )
-        .RuleFor( (fun p -> p.Email), fun (f:Faker) -> f.Internet.Email() )
+        .RuleFor( (fun p -> p.firstName), fun (f:Faker) -> f.Name.FirstName() )
+        .RuleFor( (fun p -> p.lastName), fun (f:Faker) -> f.Name.LastName() )
+        .RuleFor( (fun p -> p.email), fun (f:Faker) -> f.Internet.Email() )
 
 [<EntryPoint>]
 let main argv = 
 
-    //let MODEL = personList |> List.iteri (fun i x -> printfn "Person %d) %s" (i + 1) x.FirstName) //FUNCTION TO USE AS MODEL FOR NEW FUNCTIONS
-   (*********************************************************************
-    //  DEPRECATED - BUT KEEPING HERE AS EXAMPLE OF SIMPLIFICATION
-    let generatePerson() = faker.Generate(1)
-    let whereNumberOfPersonsIs theGivenNumber = [1 .. theGivenNumber]
-    let singlePerson =
-        fun _ -> generatePerson() 
-                   |> List.ofSeq 
-                   |> List.exactlyOne
 
-    let mapSinglePerson = List.map singlePerson
-    let personList = whereNumberOfPersonsIs 10  |> mapSinglePerson
-    **********************************************************************)
-    
     let persons = 10
-    let robustPersonList = faker.Generate(persons) |> List.ofSeq
+    let personList = faker.Generate(persons) |> List.ofSeq
 
-    printfn "*************** PRINTING ALL PERSONS' FIRST NAMES ***************"
-    let printNamesWithIndex index person = printfn "Person %d) %s" (index + 1) person.FirstName
-    let printNumberedNames =
-        fun index person -> printNamesWithIndex index person
-    let asNumberedList = List.iteri printNumberedNames      // TODO: convert to map then print in last step !-- ALL PRINT FUNCTIONS SHOULD BE RE-USABLE --! 
-    let printNamesFrom givenList = givenList |> asNumberedList
-    printNamesFrom robustPersonList
-    printfn "*****************************************************************\n"
+
+    printfn "\n*************** PRINTING ALL PERSONS' FIRST NAMES ****************\n"
+
+    // QUESTION: how does compiler know this is parameter is "person -> string" when not explicitly specified?
+    let firstNameOnly (person:Person) = person.firstName
+    let formatNamesWithIndex = fun index firstName -> printfn "Person %d) %s" (index + 1) firstName
+
+
+    let printPersonNames = personList |> List.map firstNameOnly |> List.iteri formatNamesWithIndex
+    printPersonNames |> ignore
+    printfn "\n******************************************************************\n"
+
+
+
+    printfn "**************** PRINTING ALL PERSONS' With GMail ****************\n"
 
     let gmailDomain = "@gmail.com"
-    let filterOnEmail domain = 
-        fun (person:Person) -> person.Email.Contains(domain)
-    let personsWithGmailList = List.filter (filterOnEmail gmailDomain) robustPersonList
+    let filterEmailOn emailDomain = 
+        fun (person:Person) -> person.email.Contains(emailDomain)
+    let personsWithGmailList = List.filter (filterEmailOn gmailDomain) personList
 
-    printfn "**************** PRINTING ALL PERSONS' With GMail ****************"
-    printfn "%A" personsWithGmailList
+    // QUESTION: why does compiler refer to this parameter as " 'a -> string" when not specified? Is calling ToString() suspect here somehow?
+    let personToString (person:Person) = person.ToString()
+    let printRecordString person = printfn "%s" person
+    
+    let printPersonsWithGmail = personsWithGmailList |> List.map personToString |> List.iter printRecordString
+    printPersonsWithGmail |> ignore
+    printfn "\n******************************************************************\n"
 
-    let retval = 0
-    retval
+    0
