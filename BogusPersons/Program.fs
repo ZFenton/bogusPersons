@@ -16,9 +16,9 @@ let faker =
 [<EntryPoint>]
 let main argv = 
 
-    let persons = 1000
+    let persons = 100
     let personList = faker.Generate(persons) |> List.ofSeq
-    let firstNameOnly (person:Person) = person.firstName     // QUESTION: how does compiler know this is parameter is "person -> string" when not explicitly specified?
+    let firstNameOnly person = person.firstName 
     let personsFirstNames = personList |> List.map firstNameOnly
 
     printfn "******************************************************************************************************************"
@@ -37,16 +37,14 @@ let main argv =
 
     let gmailDomain = "@gmail.com"
     let filterEmailOn emailDomain = 
-        fun (person:Person) -> person.email.Contains(emailDomain)
+                                    fun (person:Person) -> person.email.Contains(emailDomain)
     let personsWithGmailList = List.filter (filterEmailOn gmailDomain) personList
 
-    // QUESTION: why does compiler refer to this parameter as " 'a -> string" when not specified? Is calling ToString() suspect here somehow?
-    let personToString (person:Person) = person.ToString()
     let printRecordString person = printfn "%s" person
     
     let printPersonsWithGmail = 
                                 printfn "   There are %d out of %d persons with gmail as their email:\n" personsWithGmailList.Length personList.Length
-                                personsWithGmailList |> List.map personToString |> List.iter printRecordString
+                                personsWithGmailList |> List.map string |> List.iter printRecordString
     let printIfNotEmpty = 
             match List.isEmpty personsWithGmailList with
             | true -> printfn "\n   -- No person has gmail as their email\n"
@@ -76,29 +74,6 @@ let main argv =
                                                 |> Array.ofSeq
                                                 |> System.String
     printfn "   All names with duplicate letters removed: %s" (distinctCharsOf personsFirstNames)
-
-    ////         OLD VERBOSE SOLUTION BY USING THE KEYWORD MUTABLE
-    //let lower = ['a' .. 'z']
-    //let upper = ['A' .. 'Z']
-    //let mutable concatedNames = ["John"; "James"; "Jack"] |> List.fold (+) ""
-
-    //let greaterThanOne (length : int) = length > 1
-    //let stripChars (str : string) letter =
-    //    let parts = str.Split([| letter |])
-    //    match greaterThanOne (Array.length parts) with
-    //    | true -> seq {
-    //                    yield Array.head parts
-    //                    yield string letter
-    //                    yield! Array.tail parts
-    //                  }
-    //                  |> String.concat ""
-    //    | _ -> str
-    
-    //let stripDuplicateLetter = fun letter -> concatedNames <- (stripChars concatedNames letter)
-    //let stripAllButFirst list = list |> List.iter stripDuplicateLetter
-    //stripAllButFirst lower
-    //stripAllButFirst upper
-    //printfn "All names with duplicate letters removed: %s" concatedNames
 
     printfn "\n******************************************************************************************************************\n"
 
