@@ -1,10 +1,9 @@
-﻿
-open System
+﻿open System
 open Bogus
 
 [<CLIMutable>]
 [<StructuredFormatDisplay("     {firstName} {lastName}'s email is {email}")>]
-type Person = {firstName:string; lastName:string; email:string}
+type Person = {firstName:string; lastName:string; email:string} // FirstName ... etc
 
 let faker =
     Faker<Person>()
@@ -26,7 +25,6 @@ let main argv =
 
     let formatNamesWithIndex = fun index firstName -> printfn "     Person %d) %s" (index + 1) firstName
 
-
     let printPersonNames = personsFirstNames |> List.iteri formatNamesWithIndex
     printPersonNames |> ignore
     printfn "\n******************************************************************************************************************"
@@ -46,8 +44,8 @@ let main argv =
                                 printfn "   There are %d out of %d persons with gmail as their email:\n" personsWithGmailList.Length personList.Length
                                 personsWithGmailList |> List.map string |> List.iter printRecordString
     let printIfNotEmpty = 
-            match List.isEmpty personsWithGmailList with
-            | true -> printfn "\n   -- No person has gmail as their email\n"
+            match personsWithGmailList with
+            | [] -> printfn "\n   -- No person has gmail as their email\n"
             | _ -> printPersonsWithGmail
 
     printIfNotEmpty |> ignore
@@ -58,11 +56,12 @@ let main argv =
 
     printfn "************************************** PRINTING ALL PERSONS' NAMES REVERSED **************************************\n"
 
-    let reverseString (x : string) = String (Array.rev (x.ToCharArray()))
+    let reverseString = Seq.rev >> Array.ofSeq >> System.String
     let reversedFirstName = fun person -> reverseString person.firstName
 
     let printReversedFirstNames = personList |> List.map reversedFirstName |> List.iteri formatNamesWithIndex
-    printReversedFirstNames |> ignore
+    printReversedFirstNames
+
     printfn "\n******************************************************************************************************************"
 
 
