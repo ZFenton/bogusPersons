@@ -2,22 +2,22 @@
 open Bogus
 
 [<CLIMutable>]
-[<StructuredFormatDisplay("     {firstName} {lastName}'s email is {email}")>]
-type Person = {firstName:string; lastName:string; email:string} // FirstName ... etc
+[<StructuredFormatDisplay("     {FirstName} {LastName}'s email is {Email}")>]
+type Person = {FirstName:string; LastName:string; Email:string}
 
 let faker =
     Faker<Person>()
-        .RuleFor( (fun p -> p.firstName), fun (f:Faker) -> f.Name.FirstName() )
-        .RuleFor( (fun p -> p.lastName), fun (f:Faker) -> f.Name.LastName() )
-        .RuleFor( (fun p -> p.email), fun (f:Faker) -> f.Internet.Email() )
+        .RuleFor( (fun p -> p.FirstName), fun (f:Faker) -> f.Name.FirstName() )
+        .RuleFor( (fun p -> p.LastName), fun (f:Faker) -> f.Name.LastName() )
+        .RuleFor( (fun p -> p.Email), fun (f:Faker) -> f.Internet.Email() )
 
     
 [<EntryPoint>]
 let main argv = 
 
-    let persons = 100
+    let persons = 10
     let personList = faker.Generate(persons) |> List.ofSeq
-    let firstNameOnly person = person.firstName 
+    let firstNameOnly person = person.FirstName 
     let personsFirstNames = personList |> List.map firstNameOnly
 
     printfn "******************************************************************************************************************"
@@ -26,29 +26,29 @@ let main argv =
     let formatNamesWithIndex = fun index firstName -> printfn "     Person %d) %s" (index + 1) firstName
 
     let printPersonNames = personsFirstNames |> List.iteri formatNamesWithIndex
-    printPersonNames |> ignore
+    printPersonNames
     printfn "\n******************************************************************************************************************"
 
 
 
     printfn "**************************************** PRINTING ALL PERSONS' With GMail ****************************************\n"
 
-    let gmailDomain = "@gmail.com"
+    let emailDomain = "@gmail.com"
     let filterEmailOn emailDomain = 
-                                    fun (person:Person) -> person.email.Contains(emailDomain)
-    let personsWithGmailList = List.filter (filterEmailOn gmailDomain) personList
+                                    fun (person:Person) -> person.Email.Contains(emailDomain)
+    let personsWithGmailList = List.filter (filterEmailOn emailDomain) personList
 
     let printRecordString person = printfn "%s" person
     
     let printPersonsWithGmail = 
-                                printfn "   There are %d out of %d persons with gmail as their email:\n" personsWithGmailList.Length personList.Length
+                                printfn "   There are %d out of %d persons with %s as their email:\n" personsWithGmailList.Length personList.Length emailDomain
                                 personsWithGmailList |> List.map string |> List.iter printRecordString
     let printIfNotEmpty = 
             match personsWithGmailList with
-            | [] -> printfn "\n   -- No person has gmail as their email\n"
+            | [] -> printfn "\n   -- No person has %s as their email\n" emailDomain
             | _ -> printPersonsWithGmail
 
-    printIfNotEmpty |> ignore
+    printIfNotEmpty
 
     printfn "\n******************************************************************************************************************"
 
@@ -57,7 +57,7 @@ let main argv =
     printfn "************************************** PRINTING ALL PERSONS' NAMES REVERSED **************************************\n"
 
     let reverseString = Seq.rev >> Array.ofSeq >> System.String
-    let reversedFirstName = fun person -> reverseString person.firstName
+    let reversedFirstName = fun person -> reverseString person.FirstName
 
     let printReversedFirstNames = personList |> List.map reversedFirstName |> List.iteri formatNamesWithIndex
     printReversedFirstNames
