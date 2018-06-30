@@ -18,6 +18,7 @@ let main argv =
     let persons = 10
     let personList = faker.Generate(persons) |> List.ofSeq
     let firstNameOnly person = person.FirstName 
+
     let personsFirstNames = personList |> List.map firstNameOnly
 
     printfn "******************************************************************************************************************"
